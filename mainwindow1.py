@@ -86,7 +86,7 @@ root = tk.Tk()
 root.title("Background Image Example")
 
 # Load the background image
-background_image_path = "C:\\Users\\Saransh Jain\\OneDrive\\Desktop\\New folder (4)\\nnjn.png"
+background_image_path = "C:\\Users\\Saransh Jain\\Downloads\\Tsheduler (1).png"
 background_image = Image.open(background_image_path)
 
 # Scale the image to fit within the window size using the "BILINEAR" filter
@@ -168,18 +168,18 @@ photo = ImageTk.PhotoImage(image)
 # Create the "Save Task" button with an image
 save_button = Button(root, image=photo, command=save_task,borderwidth=0, activebackground="#ed1c24")
 save_button.image = photo  # Keep a reference to prevent garbage collection
-save_button.place(x=1060, y=500, height=35, width=145)
+save_button.place(x=1120, y=500, height=35, width=145)
 
 
 ####################################################################
 # Create a DateEntry widget for selecting a specific date to view tasks
-cal_selected_date = DateEntry(root, width=12, background='white', foreground='#808080', borderwidth=2,
-                               font=("Helvetica", 16), justify='center', date_pattern="dd/MM/yyyy")
-cal_selected_date.place(x=1060, y=560, height=54, width=150)
+cal_selected_date = DateEntry(root, width=12, background='white', foreground='#8F8F8F', borderwidth=2,
+                               font=("Helvetica", 12), justify='center', date_pattern="dd/MM/yyyy")
+cal_selected_date.place(x=85, y=515, height=44, width=150)
 
 # Show Tasks for Date Button
 show_tasks_for_date_button = ttk.Button(root, text="Show Tasks for Date", command=show_tasks_for_date)
-show_tasks_for_date_button.place(x=1060, y=620, height=44, width=150)
+show_tasks_for_date_button.place(x=315, y=515, height=46, width=150)
 
 # Create a Listbox to display tasks for a particular date
 tasks_for_date_listbox = tk.Listbox(root, font=('Helvetica', 12), selectbackground='#a6a6a6', selectforeground='black', height=10, width=50)
