@@ -1,7 +1,8 @@
-import tkinter as tk
 from tkinter import PhotoImage
 import ctypes
 import tkinter.ttk as ttk
+from tkinter import *
+import tkinter as tk
 from tkcalendar import DateEntry
 import sqlite3
 from datetime import datetime
@@ -85,7 +86,7 @@ root = tk.Tk()
 root.title("Background Image Example")
 
 # Load the background image
-background_image_path = "C:\\Users\\Saransh Jain\\OneDrive\\Desktop\\New folder (4)\\angular-task-scheduler-image-4.png"
+background_image_path = "C:\\Users\\Saransh Jain\\OneDrive\\Desktop\\New folder (4)\\nnjn.png"
 background_image = Image.open(background_image_path)
 
 # Scale the image to fit within the window size using the "BILINEAR" filter
@@ -163,13 +164,12 @@ image = Image.open(image_path)
 
 image = image.resize((150, 44))  # Use ImageFilter.ANTIALIAS
 photo = ImageTk.PhotoImage(image)
-photo.config(bd=0)
-
 
 # Create the "Save Task" button with an image
-save_button = ttk.Button(root, image=photo, command=save_task, style="TButton")
+save_button = Button(root, image=photo, command=save_task,borderwidth=0, activebackground="#ed1c24")
 save_button.image = photo  # Keep a reference to prevent garbage collection
-save_button.place(x=1060, y=500, height=45, width=150)
+save_button.place(x=1060, y=500, height=35, width=145)
+
 
 ####################################################################
 # Create a DateEntry widget for selecting a specific date to view tasks
