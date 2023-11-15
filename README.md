@@ -18,7 +18,7 @@ pip install tk tkcalendar pillow
 1. Clone the repository:
 
    ```bash
-  git clone https://github.com/Saransh-Jainbu/Python-project-.git
+   git clone https://github.com/Saransh-Jainbu/Python-project-.git
    ```
 
 2. Navigate to the project directory:
@@ -57,6 +57,10 @@ pip install tk tkcalendar pillow
 ## Background Image
 
 The application features a background image loaded from the specified path. Adjustments are made to scale the image to fit the window size.
+
+## Credits
+
+Special thanks to @Anousha-Singh for helping me out with the project, without her I wouldn't be able to complete it up :)
 
 ## Additional Notes
 
