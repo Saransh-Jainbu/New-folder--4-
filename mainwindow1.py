@@ -38,7 +38,8 @@ def save_task():
     # Commit the changes and close the connection
     connection.commit()
     connection.close()
-################################ Reset Function #############################3    
+################################ Reset Function ##############################
+
     reset_fields()
 
 def reset_fields():
@@ -103,7 +104,8 @@ background_image = ImageTk.PhotoImage(background_image)
 background_label = tk.Label(root, image=background_image)
 background_label.place(relwidth=1, relheight=1)
 
-########################################## Task Name Input #########################################################
+########################################## Add Task  #########################################################
+
 def temp_text(e):
    task_entry.delete(0,"end")
 
@@ -118,7 +120,7 @@ task_entry.insert(0, "Task Name")
 task_entry.place(x=932,y=168,height=44,width=515 )
 task_entry.bind("<FocusIn>", temp_text)
 
-########################################## Task Discription ##########################################################
+########################################## Add Discription ##########################################################
 
 def temp_text(e):
    discription_entry.delete(0,"end")
@@ -134,7 +136,7 @@ discription_entry.insert(0, "Task Discription .....")
 discription_entry.place(x=932,y=391,height=96,width=514 )
 discription_entry.bind("<FocusIn>", temp_text)
 
-################################# Taking date ###########################################################################
+################################# Add date ###########################################################################
 
 cal = DateEntry(root, width=12, background='white', foreground='#808080', borderwidth=2, font=("Helvetica", 16),justify='center', date_pattern="dd/MM/yyyy")
 cal.place(x=1030, y=235, height=54, width=418)
@@ -143,7 +145,7 @@ cal.place(x=1030, y=235, height=54, width=418)
 def get_selected_date():
     selected_date = cal.get_date()
 
-###### Create a label Date #############
+################################### Create a label Date ############################################################
 
 label = ttk.Label(root, text='Date', font=('Helvetica', 16), foreground='grey', background='white', relief='solid', borderwidth=2)
 label.place(x=932, y=236, height=52, width=97)
@@ -156,8 +158,65 @@ frame.place(x=932, y=236, height=52, width=97)
 label_text = tk.Label(frame, text='Date', font=('Helvetica', 16), foreground='grey', background='white')
 label_text.pack(expand=True, fill='both', padx=10, pady=10)
 
-####################### Save Button #############################
-# Save Button
+##########################################################################################################################
+
+############################################### Edit the selected task ###################################################
+
+def edit_task():
+    selected_task = tasks_for_date_listbox.curselection()
+
+    if selected_task:
+        selected_task_index = selected_task[0]
+        connection = sqlite3.connect("tasks.db")
+        cursor = connection.cursor()
+        
+        # Retrieve the original task details
+        original_task = cursor.execute("SELECT * FROM tasks").fetchall()[selected_task_index]
+        original_task_id = original_task[0]
+
+        edited_task_name = task_name.get()
+        edited_description = discription.get()
+        edited_date = cal.get_date()
+
+        # Update the task in the database
+        cursor.execute("UPDATE tasks SET task_name=?, description=?, date=? WHERE id=?",
+                       (edited_task_name, edited_description, edited_date, original_task_id))
+
+        connection.commit()
+        connection.close()
+
+        # Refresh the tasks list for the selected date
+        show_tasks_for_date()
+        reset_fields()
+
+#################################################################################################################################
+
+################################# Function to remove the selected task ##########################################################
+
+def remove_task():
+    selected_task = tasks_for_date_listbox.curselection()
+
+    if selected_task:
+        selected_task_index = selected_task[0]
+        connection = sqlite3.connect("tasks.db")
+        cursor = connection.cursor()
+
+        # Retrieve the original task details
+        original_task = cursor.execute("SELECT * FROM tasks").fetchall()[selected_task_index]
+        original_task_id = original_task[0]
+
+        # Remove the task from the database
+        cursor.execute("DELETE FROM tasks WHERE id=?", (original_task_id,))
+
+        connection.commit()
+        connection.close()
+
+        # Refresh the tasks list for the selected date
+        show_tasks_for_date()
+
+########################################### Save Button ##################################################################
+
+
 # Load the image for the button
 image_path = r"C:\Users\Saransh Jain\OneDrive\Desktop\New folder (4)\Screenshot 2023-11-14 164216.png"
 image = Image.open(image_path)
@@ -168,24 +227,39 @@ photo = ImageTk.PhotoImage(image)
 # Create the "Save Task" button with an image
 save_button = Button(root, image=photo, command=save_task,borderwidth=0, activebackground="#ed1c24")
 save_button.image = photo  # Keep a reference to prevent garbage collection
-save_button.place(x=1120, y=500, height=35, width=145)
+save_button.place(x=930, y=500, height=35, width=145)
 
 
-####################################################################
+########################################################################################################
+
+# Create an "Edit Task" button
+edit_button = ttk.Button(root, text="Edit Task", command=edit_task)
+edit_button.place(x=1120, y=500, height=35, width=145)
+
+# Create a "Remove Task" button
+remove_button = ttk.Button(root, text="Remove Task", command=remove_task)
+remove_button.place(x=1300, y=500, height=35, width=145)
+
+#######################################################################################################
 # Create a DateEntry widget for selecting a specific date to view tasks
 cal_selected_date = DateEntry(root, width=12, background='white', foreground='#8F8F8F', borderwidth=2,
                                font=("Helvetica", 12), justify='center', date_pattern="dd/MM/yyyy")
 cal_selected_date.place(x=85, y=515, height=44, width=150)
 
-# Show Tasks for Date Button
-show_tasks_for_date_button = ttk.Button(root, text="Show Tasks for Date", command=show_tasks_for_date)
-show_tasks_for_date_button.place(x=315, y=515, height=46, width=150)
+################### Show Tasks for Date Button #########################################################
 
-# Create a Listbox to display tasks for a particular date
+show_tasks_for_date_button = ttk.Button(root, text="Show Tasks for Date", command=show_tasks_for_date)
+show_tasks_for_date_button.place(x=335
+
+
+, y=515, height=46, width=150)
+
+################ Create a Listbox to display tasks for a particular date ###############################
+
 tasks_for_date_listbox = tk.Listbox(root, font=('Helvetica', 12), selectbackground='#a6a6a6', selectforeground='black', height=10, width=50)
 tasks_for_date_listbox.place(x=50, y=300)
 
-####################################################################################
+#########################################################################################################
 
 # Run the tkinter main loop
 root.mainloop()
