@@ -60,7 +60,7 @@ The application features a background image loaded from the specified path. Adju
 
 ## Credits
 
-Special thanks to @Anousha-Singh for helping me out with the project, without her I wouldn't be able to complete it up :)
+Special thanks to @Anousha-Singh (https://github.com/Anousha-Singh) for helping me out with the project, without her I wouldn't be able to complete this project up :)
 
 ## Additional Notes
 
