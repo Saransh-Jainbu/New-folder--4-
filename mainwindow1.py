@@ -7,15 +7,21 @@ from tkcalendar import DateEntry
 import sqlite3
 from datetime import datetime
 from PIL import Image, ImageTk, ImageFilter  # Import ImageFilter module
+from tkinter import messagebox
 
 ###################################### SQL Database COnnection ##############################
 
-# Function to save the task details to the database
 def save_task():
     # Retrieve values from the input fields
     task_name_value = task_name.get()
     description_value = discription.get()
     date_value = cal.get_date()
+
+    # Check if the task name is still the default value
+    if task_name_value == "Task Name":
+        # Display an error popup
+        messagebox.showerror("Error", "Please enter a valid task name.")
+        return  # Stop further execution if there's an error
 
     # Connect to the SQLite database (or create it if it doesn't exist)
     connection = sqlite3.connect("tasks.db")
@@ -38,6 +44,9 @@ def save_task():
     # Commit the changes and close the connection
     connection.commit()
     connection.close()
+
+    # Reset the input fields
+    reset_fields()
 ################################ Reset Function ##############################
 
     reset_fields()
@@ -87,7 +96,7 @@ root = tk.Tk()
 root.title("Background Image Example")
 
 # Load the background image
-background_image_path = "C:\\Users\\Saransh Jain\\Downloads\\Tsheduler (1).png"
+background_image_path = "Tsheduler_bg.png"
 background_image = Image.open(background_image_path)
 
 # Scale the image to fit within the window size using the "BILINEAR" filter
@@ -218,7 +227,7 @@ def remove_task():
 
 
 # Load the image for the button
-image_path = r"C:\Users\Saransh Jain\OneDrive\Desktop\New folder (4)\Screenshot 2023-11-14 164216.png"
+image_path = r"shedule_button.png"
 image = Image.open(image_path)
 
 image = image.resize((150, 44))  # Use ImageFilter.ANTIALIAS
