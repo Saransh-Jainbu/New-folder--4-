@@ -93,6 +93,7 @@ screen_width, screen_height = user32.GetSystemMetrics(0), user32.GetSystemMetric
 
 # Create the tkinter window
 root = tk.Tk()
+root.resizable(FALSE,FALSE)
 root.title("Background Image Example")
 
 # Load the background image
@@ -230,7 +231,7 @@ def remove_task():
 image_path = r"shedule_button.png"
 image = Image.open(image_path)
 
-image = image.resize((150, 44))  # Use ImageFilter.ANTIALIAS
+image = image.resize((150, 44))  
 photo = ImageTk.PhotoImage(image)
 
 # Create the "Save Task" button with an image
