@@ -1,5 +1,3 @@
-from tkinter import PhotoImage
-import ctypes
 import tkinter.ttk as ttk
 from tkinter import *
 import tkinter as tk
@@ -7,7 +5,7 @@ from tkcalendar import DateEntry
 import sqlite3
 from datetime import datetime
 from datetime import time
-from PIL import Image, ImageTk, ImageFilter  # Import ImageFilter module
+from PIL import Image, ImageTk  
 from tkinter import messagebox
 
 ###################################### SQL Database COnnection ##############################
@@ -87,7 +85,9 @@ def reset_fields():
     cal.set_date(datetime.now())
 
     # Reset time to the default text
-    cal._set_time("Task Time (HH:MM)")
+    time_entry.delete(0, "end")
+    time_entry.insert(0, "Task Time (HH:MM)")
+
 
 
 #################################################################################
@@ -113,8 +113,13 @@ def show_tasks_for_date():
 
         # Insert data into the listbox
         for task in selected_date_tasks:
-            # Convert the datetime string to a more readable format
-            formatted_datetime = datetime.strptime(task[3], "%Y-%m-%d %H:%M:%S").strftime("%Y-%m-%d %H:%M")
+            try:
+                # Try to parse as date-time
+                formatted_datetime = datetime.strptime(task[3], "%Y-%m-%d %H:%M:%S").strftime("%Y-%m-%d %H:%M:%S")
+            except ValueError:
+                # If parsing as date-time fails, assume it's date-only
+                formatted_datetime = datetime.strptime(task[3], "%Y-%m-%d").strftime("%Y-%m-%d")
+
             tasks_for_date_listbox.insert(tk.END, f"{task[1]} - {task[2]} ({formatted_datetime})")
 
     except sqlite3.Error as e:
@@ -123,11 +128,9 @@ def show_tasks_for_date():
 
 
 
-########################################################################################
 
-# Get the screen size   (Disabled Feature , can be used to exapnd the window size to maximum ..)
-'''user32 = ctypes.windll.user32
-screen_width, screen_height = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)'''
+
+########################################################################################
 
 # Create the tkinter window
 root = tk.Tk()
@@ -136,16 +139,9 @@ root.title("Background Image Example")
 root.geometry('1300x729+70+12')
 
 # Load the background image
-background_image_path = "C:\\Users\\Saransh Jain\\OneDrive\\Desktop\\Tsheduler (2).png"
+background_image_path = "Tsheduler (2).png"
 background_image = Image.open(background_image_path)
 
-# Scale the image to fit within the window size using the "BILINEAR" filter (Disabled Feature)
-'''image_width, image_height = background_image.size
-scaling_factor = min(screen_width / image_width, screen_height / image_height)
-image_width, image_height = int(image_width * scaling_factor), int(image_height * scaling_factor)
-background_image = background_image.resize((image_width, image_height), Image.BILINEAR)
-# Set the window size to match the screen size
-root.geometry(f"{image_width}x{image_height}")'''
 
 # Create a label to display the background image
 background_image = ImageTk.PhotoImage(background_image)
@@ -227,7 +223,7 @@ def edit_task():
         edited_date = cal.get_date()
 
         # Update the task in the database
-        cursor.execute("UPDATE tasks SET task_name=?, description=?, date=? WHERE id=?",
+        cursor.execute("UPDATE tasks SET task_name=?, description=?, datetime=? WHERE id=?",
                        (edited_task_name, edited_description, edited_date, original_task_id))
 
         connection.commit()
@@ -263,14 +259,6 @@ def remove_task():
         show_tasks_for_date()
 
 ########################################### Save Button ##################################################################
-
-
-# Load the image for the button
-image_path = r"shedule_button.png"
-image = Image.open(image_path)
-
-image = image.resize((150, 44))  
-photo = ImageTk.PhotoImage(image)
 
 # Create the "Save Task" button with an image
 save_button = Button(root,text="Schedule", command=save_task,borderwidth=0, activebackground="#ed1c24",bg="#ed1c24",fg="white",font=("Helvetica",13,'bold'))
@@ -330,7 +318,7 @@ def show_upcoming_tasks():
         # Insert data into the listbox
         for task in upcoming_tasks:
             # Convert the datetime string to a more readable format
-            formatted_datetime = datetime.strptime(task[3], "%Y-%m-%d %H:%M:%S").strftime("%Y-%m-%d %H:%M")
+            formatted_datetime = datetime.strptime(task[3], "%Y-%m-%d %H:%M:%S").strftime("%Y-%m-%d %H:%M:%S")
             tasks_for_date_listbox.insert(tk.END, f"{task[1]} - {task[2]} ({formatted_datetime})")
 
     except sqlite3.Error as e:
@@ -343,4 +331,3 @@ show_upcoming_button.place(x=355, y=85, height=35, width=150)
 
 ### Run the tkinter main loop
 root.mainloop()
-
