@@ -14,8 +14,7 @@ from tkinter import *
 import tkinter as tk
 from tkcalendar import DateEntry
 import sqlite3
-from datetime import datetime
-from datetime import time
+from datetime import datetime,time
 from PIL import Image, ImageTk  
 from tkinter import messagebox
 
@@ -139,6 +138,7 @@ def save_task():
 
     
 ##################################################################################################################################################################################
+
 '''
 Its The part of Code where I spent my most time , I will simply breakdown what happens here:
 
@@ -151,7 +151,6 @@ Its The part of Code where I spent my most time , I will simply breakdown what h
 In simpler terms, imagine opening your to-do list, checking tasks for a specific day, and updating the list accordingly. If something goes wrong, it lets you know.
 
 '''
-
 
 def show_tasks_for_date():
     try:
@@ -201,6 +200,8 @@ show_upcoming_button.place(x=355, y=85, height=35, width=150)
 
 ####################################################################################################################################################################################
 
+'''From here on code is very easy , still I have add comments to make it more easier for any reader '''
+
 ########################################## Add Task  #########################################################
 
 def temp_text(e):
@@ -246,7 +247,7 @@ frame.place(x=710, y=186, height=37, width=80)
 label_text = tk.Label(frame, text='Date', font=('Helvetica', 16), foreground='grey', background='white')
 label_text.pack(expand=True, fill='both', padx=10, pady=10)
 
-################################# Add date ###########################################################################
+#################################### Add date #######################################################
 
 cal = DateEntry(root, width=12, background='white', foreground='#808080', borderwidth=2, font=("Helvetica", 16),justify='center', date_pattern="dd/MM/yyyy")
 cal.place(x=790, y=185, height=41, width=312)
@@ -309,6 +310,8 @@ def remove_task():
 
 ########################################### Buttons ##################################################################
 
+'''Just Placing buttons Nothing Special'''
+
 # Creating the "Save Task" button with an image
 save_button = Button(root,text="Schedule", command=save_task,borderwidth=0, activebackground="#ed1c24",bg="#ed1c24",fg="white",font=("Helvetica",13,'bold'))
 save_button.place(x=700, y=425, height=35, width=120)
@@ -353,5 +356,30 @@ def handle_time_entry_click(event):
 # Binding the click event to the time entry
 time_entry.bind("<FocusIn>", handle_time_entry_click)
 
+############################################################################################################################################################
+
+'''So I am just sharing all info about libraries here:
+
+tkinter.ttk, tkinter, ttk (Themed Tkinter):ttk stands for themed Tkinter, and it provides access to the Tk themed widget set. It is an improved set of standard Tkinter widgets with a modern look.
+tkinter is the standard GUI toolkit for Python.
+
+DateEntry (from tkcalendar):DateEntry is a widget provided by the tkcalendar library. It is a date entry widget that simplifies the process of getting dates from the user.
+
+sqlite3:sqlite3 is a module that provides a Python interface for SQLite, a lightweight, disk-based database. It is used for database operations.
+
+datetime:datetime is a module that supplies classes for manipulating dates and times. It is extensively used for handling date and time information in the code.
+time: time is a module providing various time-related functions. It is used for manipulating time-specific information.
+
+PIL (Pillow):PIL (Python Imaging Library) is an open-source library for opening, manipulating, and saving many different image file formats. In the code, it is used to load and display background images.
+
+Image, ImageTk (from PIL):Image and ImageTk are classes from the PIL library. Image represents an image, and ImageTk is used to convert images to Tkinter PhotoImage objects.
+
+messagebox (from tkinter):messagebox is a module from tkinter that provides a set of standard dialogs that can be used to display messages to the user.
+
+Button, Label, Frame (from tkinter):Button, Label, and Frame are standard Tkinter widgets. They are used for creating buttons, labels, and frames, respectively.
+
+StringVar:StringVar is a variable class provided by Tkinter. It is used to manage string-type Tkinter variables.
+
+Style (from ttk):Style is a class from the ttk module used to configure the appearance of Tkinter widgets.'''
 
 root.mainloop()
