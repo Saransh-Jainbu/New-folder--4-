@@ -164,7 +164,7 @@ task_entry.insert(0, "Task Name")
 task_entry.place(x=710,y=134,height=34,width=391 )
 task_entry.bind("<FocusIn>", temp_text)
 
-########################################## Add Discription ##########################################################
+########################################## Add Discription #######################################################
 
 def temp_text(e):
    discription_entry.delete(0,"end")
@@ -265,9 +265,6 @@ save_button = Button(root,text="Schedule", command=save_task,borderwidth=0, acti
 #save_button.image = photo  # Keep a reference to prevent garbage collection
 save_button.place(x=700, y=425, height=35, width=120)
 
-
-########################################################################################################
-
 # Create an "Edit Task" button
 edit_button = ttk.Button(root, text="Edit Task", command=edit_task)
 edit_button.place(x=850, y=425, height=35, width=120)
@@ -276,19 +273,16 @@ edit_button.place(x=850, y=425, height=35, width=120)
 remove_button = ttk.Button(root, text="Remove Task", command=remove_task)
 remove_button.place(x=1000, y=425, height=35, width=120)
 
-#######################################################################################################
 # Create a DateEntry widget for selecting a specific date to view tasks
 cal_selected_date = DateEntry(root, width=12, background='white', foreground='#8F8F8F', borderwidth=2,
                                font=("Helvetica", 12), justify='center', date_pattern="dd/MM/yyyy")
 cal_selected_date.place(x=85, y=355, height=35, width=150)
 
-################### Show Tasks for Date Button #########################################################
-
+#Creating a "Show task for date button"
 show_tasks_for_date_button = ttk.Button(root, text="Show Tasks for Date", command=show_tasks_for_date)
 show_tasks_for_date_button.place(x=335, y=355, height=35, width=150)
 
-################ Create a Listbox to display tasks for a particular date ###############################
-
+#Creating a listboc
 tasks_for_date_listbox = tk.Listbox(root, font=('Helvetica', 12), selectbackground='#a6a6a6', selectforeground='black', height=10, width=50)
 tasks_for_date_listbox.place(x=50, y=134)
 
