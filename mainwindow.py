@@ -6,16 +6,39 @@ import tkinter as tk
 from tkcalendar import DateEntry
 import sqlite3
 from datetime import datetime
+from datetime import time
 from PIL import Image, ImageTk, ImageFilter  # Import ImageFilter module
 from tkinter import messagebox
 
 ###################################### SQL Database COnnection ##############################
 
+
+# Function to create the 'tasks' table if it doesn't exist
+def create_tasks_table():
+    connection = sqlite3.connect("tasks.db")
+    cursor = connection.cursor()
+
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS tasks (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            task_name TEXT,
+            description TEXT,
+            datetime TEXT
+        )
+    ''')
+
+    connection.commit()
+    connection.close()
+
+# Function to save the task with date and time
 def save_task():
+    create_tasks_table()  # Create the table if it doesn't exist
+
     # Retrieve values from the input fields
     task_name_value = task_name.get()
     description_value = discription.get()
     date_value = cal.get_date()
+    time_value = time_entry.get()  # Get the time input
 
     # Check if the task name is still the default value
     if task_name_value == "Task Name":
@@ -23,23 +46,26 @@ def save_task():
         messagebox.showerror("Error", "Please enter a valid task name.")
         return  # Stop further execution if there's an error
 
-    # Connect to the SQLite database (or create it if it doesn't exist)
+    # Convert time_value to datetime.time
+    try:
+        time_parts = time_value.split(':')
+        hour = int(time_parts[0])
+        minute = int(time_parts[1])
+        time_object = time(hour, minute)
+    except ValueError:
+        messagebox.showerror("Error", "Invalid time format. Please use HH:MM.")
+        return
+
+    # Combine date and time into a single datetime object
+    datetime_value = datetime.combine(date_value, time_object)
+
+    # Connect to the SQLite database
     connection = sqlite3.connect("tasks.db")
     cursor = connection.cursor()
 
-    # Create a table if it doesn't exist
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS tasks (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            task_name TEXT,
-            description TEXT,
-            date TEXT
-        )
-    ''')
-
     # Insert the task details into the database
-    cursor.execute("INSERT INTO tasks (task_name, description, date) VALUES (?, ?, ?)",
-                   (task_name_value, description_value, date_value))
+    cursor.execute("INSERT INTO tasks (task_name, description, datetime) VALUES (?, ?, ?)",
+                   (task_name_value, description_value, str(datetime_value)))
 
     # Commit the changes and close the connection
     connection.commit()
@@ -47,67 +73,79 @@ def save_task():
 
     # Reset the input fields
     reset_fields()
-################################ Reset Function ##############################
 
-    reset_fields()
+################################ Reset Function ##############################
 
 def reset_fields():
     # Reset task name
     task_name.set("Task Name")
 
     # Reset description
-    discription.set("Task Discription .....")
+    discription.set("Task Description .....")
 
-    # Reset date
+    # Reset date to the current date
     cal.set_date(datetime.now())
+
+    # Reset time to the default text
+    cal._set_time("Task Time (HH:MM)")
+
 
 #################################################################################
 
 ################################# Side Calendar #################################
 def show_tasks_for_date():
-    # Connect to the SQLite database
-    connection = sqlite3.connect("tasks.db")
-    cursor = connection.cursor()
+    try:
+        # Connect to the SQLite database
+        connection = sqlite3.connect("tasks.db")
+        cursor = connection.cursor()
 
-    # Retrieve selected date from the DateEntry widget
-    selected_date = cal_selected_date.get_date()
+        # Retrieve selected date from the DateEntry widget
+        selected_date = cal_selected_date.get_date()
 
-    # Retrieve tasks for the selected date
-    selected_date_tasks = cursor.execute("SELECT * FROM tasks WHERE date = ?", (selected_date,)).fetchall()
+        # Retrieve tasks for the selected date
+        selected_date_tasks = cursor.execute("SELECT * FROM tasks WHERE datetime LIKE ?", (f"{selected_date}%",)).fetchall()
 
-    # Close the connection
-    connection.close()
+        # Close the connection
+        connection.close()
 
-    # Clear existing items in the listbox
-    tasks_for_date_listbox.delete(0, tk.END)
+        # Clear existing items in the listbox
+        tasks_for_date_listbox.delete(0, tk.END)
 
-    # Insert data into the listbox
-    for task in selected_date_tasks:
-        tasks_for_date_listbox.insert(tk.END, f"{task[1]} - {task[2]} ({task[3]})")
+        # Insert data into the listbox
+        for task in selected_date_tasks:
+            # Convert the datetime string to a more readable format
+            formatted_datetime = datetime.strptime(task[3], "%Y-%m-%d %H:%M:%S").strftime("%Y-%m-%d %H:%M")
+            tasks_for_date_listbox.insert(tk.END, f"{task[1]} - {task[2]} ({formatted_datetime})")
+
+    except sqlite3.Error as e:
+        # Display an error message if there's an issue with the SQL query or database connection
+        messagebox.showerror("Error", f"Error accessing the database: {str(e)}")
+
+
 
 ########################################################################################
 
-# Get the screen size
-user32 = ctypes.windll.user32
-screen_width, screen_height = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
+# Get the screen size   (Disabled Feature , can be used to exapnd the window size to maximum ..)
+'''user32 = ctypes.windll.user32
+screen_width, screen_height = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)'''
 
 # Create the tkinter window
 root = tk.Tk()
 root.resizable(FALSE,FALSE)
 root.title("Background Image Example")
+root.geometry('1300x729+70+12')
 
 # Load the background image
-background_image_path = "Tsheduler_bg.png"
+background_image_path = "C:\\Users\\Saransh Jain\\OneDrive\\Desktop\\Tsheduler (2).png"
 background_image = Image.open(background_image_path)
 
-# Scale the image to fit within the window size using the "BILINEAR" filter
-
-image_width, image_height = background_image.size
+# Scale the image to fit within the window size using the "BILINEAR" filter (Disabled Feature)
+'''image_width, image_height = background_image.size
 scaling_factor = min(screen_width / image_width, screen_height / image_height)
 image_width, image_height = int(image_width * scaling_factor), int(image_height * scaling_factor)
 background_image = background_image.resize((image_width, image_height), Image.BILINEAR)
 # Set the window size to match the screen size
-root.geometry(f"{image_width}x{image_height}")
+root.geometry(f"{image_width}x{image_height}")'''
 
 # Create a label to display the background image
 background_image = ImageTk.PhotoImage(background_image)
@@ -127,7 +165,7 @@ task_entry = ttk.Entry(root,textvariable = task_name , font=('Helvetica',16,'nor
 task_entry.insert(0, "Task Name")
 
 #placing the input box
-task_entry.place(x=932,y=168,height=44,width=515 )
+task_entry.place(x=710,y=134,height=34,width=391 )
 task_entry.bind("<FocusIn>", temp_text)
 
 ########################################## Add Discription ##########################################################
@@ -143,13 +181,13 @@ discription_entry = ttk.Entry(root,textvariable = discription , font=('Helvetica
 discription_entry.insert(0, "Task Discription .....")
 
 #placing the input box
-discription_entry.place(x=932,y=391,height=96,width=514 )
+discription_entry.place(x=710,y=303,height=75,width=391 )
 discription_entry.bind("<FocusIn>", temp_text)
 
 ################################# Add date ###########################################################################
 
 cal = DateEntry(root, width=12, background='white', foreground='#808080', borderwidth=2, font=("Helvetica", 16),justify='center', date_pattern="dd/MM/yyyy")
-cal.place(x=1030, y=235, height=54, width=418)
+cal.place(x=790, y=185, height=41, width=312)
 
 # Function to retrieve the selected date
 def get_selected_date():
@@ -158,11 +196,11 @@ def get_selected_date():
 ################################### Create a label Date ############################################################
 
 label = ttk.Label(root, text='Date', font=('Helvetica', 16), foreground='grey', background='white', relief='solid', borderwidth=2)
-label.place(x=932, y=236, height=52, width=97)
+label.place(x=710, y=186, height=37, width=80)
 
 # Create a frame to act as the background for the label
 frame = tk.Frame(root, background='white')
-frame.place(x=932, y=236, height=52, width=97)
+frame.place(x=710, y=186, height=37, width=80)
 
 # Center the text within the frame
 label_text = tk.Label(frame, text='Date', font=('Helvetica', 16), foreground='grey', background='white')
@@ -235,41 +273,74 @@ image = image.resize((150, 44))
 photo = ImageTk.PhotoImage(image)
 
 # Create the "Save Task" button with an image
-save_button = Button(root, image=photo, command=save_task,borderwidth=0, activebackground="#ed1c24")
-save_button.image = photo  # Keep a reference to prevent garbage collection
-save_button.place(x=930, y=500, height=35, width=145)
+save_button = Button(root,text="Schedule", command=save_task,borderwidth=0, activebackground="#ed1c24",bg="#ed1c24",fg="white",font=("Helvetica",13,'bold'))
+#save_button.image = photo  # Keep a reference to prevent garbage collection
+save_button.place(x=700, y=425, height=35, width=120)
 
 
 ########################################################################################################
 
 # Create an "Edit Task" button
 edit_button = ttk.Button(root, text="Edit Task", command=edit_task)
-edit_button.place(x=1120, y=500, height=35, width=145)
+edit_button.place(x=850, y=425, height=35, width=120)
 
 # Create a "Remove Task" button
 remove_button = ttk.Button(root, text="Remove Task", command=remove_task)
-remove_button.place(x=1300, y=500, height=35, width=145)
+remove_button.place(x=1000, y=425, height=35, width=120)
 
 #######################################################################################################
 # Create a DateEntry widget for selecting a specific date to view tasks
 cal_selected_date = DateEntry(root, width=12, background='white', foreground='#8F8F8F', borderwidth=2,
                                font=("Helvetica", 12), justify='center', date_pattern="dd/MM/yyyy")
-cal_selected_date.place(x=85, y=515, height=44, width=150)
+cal_selected_date.place(x=85, y=355, height=35, width=150)
 
 ################### Show Tasks for Date Button #########################################################
 
 show_tasks_for_date_button = ttk.Button(root, text="Show Tasks for Date", command=show_tasks_for_date)
-show_tasks_for_date_button.place(x=335
-
-
-, y=515, height=46, width=150)
+show_tasks_for_date_button.place(x=335, y=355, height=35, width=150)
 
 ################ Create a Listbox to display tasks for a particular date ###############################
 
 tasks_for_date_listbox = tk.Listbox(root, font=('Helvetica', 12), selectbackground='#a6a6a6', selectforeground='black', height=10, width=50)
-tasks_for_date_listbox.place(x=50, y=300)
+tasks_for_date_listbox.place(x=50, y=134)
 
 #########################################################################################################
+# Add a time entry widget
+time_entry = ttk.Entry(root, font=('Helvetica', 16, 'normal'), style='pad.TEntry')
+time_entry.insert(0, "Task Time (HH:MM)")  # Default value
+time_entry.place(x=710, y=245, height=40, width=391)
+##################################### SHow all upcoming tasks #########################################
+def show_upcoming_tasks():
+    try:
+        # Connect to the SQLite database
+        connection = sqlite3.connect("tasks.db")
+        cursor = connection.cursor()
 
-# Run the tkinter main loop
+        # Retrieve upcoming tasks from the database (tasks with datetime greater than or equal to now)
+        current_datetime = datetime.now().strftime("%Y-%m-%d 00:00")  # Start of the current day
+
+        upcoming_tasks = cursor.execute("SELECT * FROM tasks WHERE datetime >= ?", (current_datetime,)).fetchall()
+
+        # Close the connection
+        connection.close()
+
+        # Clear existing items in the listbox
+        tasks_for_date_listbox.delete(0, tk.END)
+
+        # Insert data into the listbox
+        for task in upcoming_tasks:
+            # Convert the datetime string to a more readable format
+            formatted_datetime = datetime.strptime(task[3], "%Y-%m-%d %H:%M:%S").strftime("%Y-%m-%d %H:%M")
+            tasks_for_date_listbox.insert(tk.END, f"{task[1]} - {task[2]} ({formatted_datetime})")
+
+    except sqlite3.Error as e:
+        # Display an error message if there's an issue with the SQL query or database connection
+        messagebox.showerror("Error", f"Error accessing the database: {str(e)}")
+
+# Create a "Show Upcoming Tasks" button
+show_upcoming_button = ttk.Button(root, text="Show Upcoming Tasks", command=show_upcoming_tasks)
+show_upcoming_button.place(x=355, y=85, height=35, width=150)
+
+### Run the tkinter main loop
 root.mainloop()
+
