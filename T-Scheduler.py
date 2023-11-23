@@ -1,5 +1,5 @@
 # Project Link - https://github.com/Saransh-Jainbu/T-Sheduler
-# I will try my best to add notes explaining every peice of code used
+# We will try our best to add notes explaining every peice of code used
 # Feel free to customize code based on your liking.
 
 ############################################################ Importing all Necessary Libraries #######################################################################################
@@ -7,7 +7,7 @@
 # Make sure you pip install all the libraries before running the code 
 # To pip install go to cmd and Enter pip install package_name
 # No this is not chatgpt I am trying my best to write the code in such a way that anyone can understand this code
-# I will explain all libraries while using them , so don't worry :)
+# explain all libraries while using them , so don't worry :)
 
 import tkinter.ttk as ttk
 from tkinter import *
@@ -48,7 +48,6 @@ Explaination of Code:
 => The table has the following columns:id,task_name,description,datetime
 => Commit and close just save the changes to the Sql Database and closes the connection
 
-(Reminder - Its just me Saransh writting the code and No chatgpt is used in writing the code)
 
 '''
 ###################################################################################################################################################################################
@@ -56,11 +55,11 @@ Explaination of Code:
 # Create the tkinter window
 root = tk.Tk()
 root.resizable(FALSE,FALSE)
-root.title("Background Image Example")
-root.geometry('1300x729+70+12')
+root.title("T-Scheduler")
+root.geometry('1300x729+195+100')
 
 # Load the background image
-background_image_path = "Tsheduler (2).png"
+background_image_path = "Tsheduler_bg.png"
 background_image = Image.open(background_image_path)
 
 # Create a label to display the background image
@@ -68,6 +67,25 @@ background_image = ImageTk.PhotoImage(background_image)
 background_label = tk.Label(root, image=background_image)
 background_label.place(relwidth=1, relheight=1)
 
+#Create a label for displaying logo
+logo_image = ImageTk.PhotoImage(Image.open("T-Scheduler.png"))
+logo_label = tk.Label(root, image=logo_image, borderwidth=0, highlightthickness=0)
+logo_label.place(x=10, y=4)
+
+#Create a label for displaying bookmark label
+bk_image = ImageTk.PhotoImage(Image.open("Bookmarkicon.png"))
+bk_label = tk.Label(root, image=bk_image, borderwidth=0, highlightthickness=0)
+bk_label.place(x=180, y=425)
+
+#Create a label for displaying reminder label
+re_image = ImageTk.PhotoImage(Image.open("reminders.png"))
+re_label = tk.Label(root, image=re_image, borderwidth=0, highlightthickness=0)
+re_label.place(x=180, y=80)
+
+#Create a label for displaying paste_link label
+paste_image = ImageTk.PhotoImage(Image.open("Paste_link.png"))
+paste_label = tk.Label(root, image=paste_image, borderwidth=0, highlightthickness=0)
+paste_label.place(x=775, y=555)
 ######################################################################################################################################################################################
 #Just creating a function right now which will be used to reset the input boxes to default values , after user interactiob
 
@@ -95,7 +113,7 @@ def reset_fields():
     => If the code is not in the format it will just send a pop up error stating wrong format 
     => Rest Sql connection part is same , we will open connection ,update time and date input to database and then commit and close the databse
 
-    *Special Note- Yeah I am writing all this comments manually , Not at all Ai generated comments*
+    *Special Note- All this comments are written manually , Not at all Ai generated comments*
     
     '''
 
@@ -192,8 +210,8 @@ def show_upcoming_tasks():
         messagebox.showerror("Error", f"Error accessing the database: {str(e)}")
 
 # Create a "Show Upcoming Tasks" button
-show_upcoming_button = ttk.Button(root, text="Show Upcoming Tasks", command=show_upcoming_tasks)
-show_upcoming_button.place(x=355, y=85, height=35, width=150)
+#show_upcoming_button = ttk.Button(root, text="Show Upcoming Tasks", command=show_upcoming_tasks)
+#show_upcoming_button.place(x=355, y=85, height=35, width=150)
 
 
 
@@ -327,11 +345,11 @@ remove_button.place(x=1000, y=425, height=35, width=120)
 # Creating a DateEntry widget for selecting a specific date to view tasks
 cal_selected_date = DateEntry(root, width=12, background='white', foreground='#8F8F8F', borderwidth=2,
                                font=("Helvetica", 12), justify='center', date_pattern="dd/MM/yyyy")
-cal_selected_date.place(x=85, y=355, height=35, width=150)
+cal_selected_date.place(x=50, y=355, height=30, width=125)
 
 #Creating a "Show task for date button"
 show_tasks_for_date_button = ttk.Button(root, text="Show Tasks for Date", command=show_tasks_for_date)
-show_tasks_for_date_button.place(x=335, y=355, height=35, width=150)
+show_tasks_for_date_button.place(x=200, y=355, height=30, width=125)
 
 #Creating a listboc
 tasks_for_date_listbox = tk.Listbox(root, font=('Helvetica', 12), selectbackground='#a6a6a6', selectforeground='black', height=10, width=50)
@@ -339,7 +357,7 @@ tasks_for_date_listbox.place(x=50, y=134)
 
 # Create a "Show Upcoming Tasks" button
 show_upcoming_button = ttk.Button(root, text="Show Upcoming Tasks", command=show_upcoming_tasks)
-show_upcoming_button.place(x=355, y=85, height=35, width=150)
+show_upcoming_button.place(x=355, y=355, height=30, width=150)
 
 # Creating a time entry widget
 time_entry_default = "Task Time (HH:MM)"
@@ -357,6 +375,116 @@ def handle_time_entry_click(event):
 time_entry.bind("<FocusIn>", handle_time_entry_click)
 
 ############################################################################################################################################################
+
+import webbrowser
+
+def create_bookmarks_table():
+    connection = sqlite3.connect("bookmarks.db")
+    cursor = connection.cursor()
+
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS bookmarks (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            url TEXT
+        )
+    ''')
+
+    connection.commit()
+    connection.close()
+
+def save_bookmark_to_db(url):
+    connection = sqlite3.connect("bookmarks.db")
+    cursor = connection.cursor()
+
+    cursor.execute("INSERT INTO bookmarks (url) VALUES (?)", (url,))
+
+    connection.commit()
+    connection.close()
+
+def get_bookmarks_from_db():
+    connection = sqlite3.connect("bookmarks.db")
+    cursor = connection.cursor()
+
+    bookmarks = cursor.execute("SELECT * FROM bookmarks").fetchall()
+
+    connection.close()
+
+    return bookmarks
+
+create_bookmarks_table()
+
+
+
+# New bookmark-related functions
+def save_bookmark():
+    url = entry_url.get()
+
+    if not url:
+        messagebox.showwarning("Warning", "Please enter a URL.")
+        return
+
+    save_bookmark_to_db(url)
+    update_bookmarks_list()
+    entry_url.delete(0, tk.END)
+
+def update_bookmarks_list():
+    listbox_bookmarks.delete(0, tk.END)
+
+    bookmarks = get_bookmarks_from_db()
+
+    for index, bookmark in enumerate(bookmarks, start=1):
+        listbox_bookmarks.insert(tk.END, f"{index}. {bookmark[1]}")
+
+def launch_selected_bookmark():
+    selected_index = listbox_bookmarks.curselection()
+
+    if not selected_index:
+        messagebox.showwarning("Warning", "Please select a bookmark.")
+        return
+
+    selected_url = get_bookmarks_from_db()[selected_index[0]][1]
+    webbrowser.open_new(selected_url)
+
+def delete_selected_bookmark():
+    selected_index = listbox_bookmarks.curselection()
+
+    if not selected_index:
+        messagebox.showwarning("Warning", "Please select a bookmark to delete.")
+        return
+
+    selected_id = get_bookmarks_from_db()[selected_index[0]][0]
+
+    connection = sqlite3.connect("bookmarks.db")
+    cursor = connection.cursor()
+
+    cursor.execute("DELETE FROM bookmarks WHERE id=?", (selected_id,))
+
+    connection.commit()
+    connection.close()
+
+    update_bookmarks_list()
+
+# GUI components for bookmark functionality
+
+entry_url = ttk.Entry(root, font=('Helvetica', 12), justify='center')
+entry_url.place(x=710, y=628, width=300, height=33)
+
+button_save = ttk.Button(root, text="Save Bookmark", command=save_bookmark)
+button_save.place(x=1050, y=535, width=150, height=30)
+
+
+listbox_bookmarks = tk.Listbox(root, font=('Helvetica', 12), selectbackground='#a6a6a6', selectforeground='black', height=10, width=50)
+listbox_bookmarks.place(x=50, y=480, width=460, height=180)
+
+button_launch = ttk.Button(root, text="Launch Bookmark", command=launch_selected_bookmark)
+button_launch.place(x=1050, y=581, width=150, height=30)
+
+button_delete = ttk.Button(root, text="Delete Bookmark", command=delete_selected_bookmark)
+button_delete.place(x=1050, y=628, width=150, height=30)
+
+
+update_bookmarks_list()
+
 
 '''So I am just sharing all info about libraries here:
 
